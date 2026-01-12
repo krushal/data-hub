@@ -1,24 +1,24 @@
 import { useParams } from "react-router-dom";
-import { datasets } from "../data/mockData";
-import Breadcrumbs from "../components/layout/Breadcrumbs";
-import Badge from "../components/common/Badge";
+import { useEffect, useState } from "react";
+import { fetchDataset } from "../api/client";
+import type { Dataset } from "../types";
 
-const Dataset = () => {
+const DatasetPage = () => {
   const { datasetId } = useParams();
-  const dataset = datasets.find((d) => d.id === datasetId);
+  const [dataset, setDataset] = useState<Dataset | null>(null);
 
-  if (!dataset) return <p>Dataset not found</p>;
+  useEffect(() => {
+    if (datasetId) fetchDataset(datasetId).then(setDataset);
+  }, [datasetId]);
+
+  if (!dataset) return <p>Loading...</p>;
 
   return (
     <div>
-      <Breadcrumbs />
       <h2>{dataset.name}</h2>
-      <Badge status={dataset.freshness} />
       <p>{dataset.description}</p>
-      <p>Owner: {dataset.owner}</p>
-      <p>Contact: {dataset.contact}</p>
     </div>
   );
 };
 
-export default Dataset;
+export default DatasetPage;
